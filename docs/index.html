@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Performance Prioritization | FlyRank Capstone</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      line-height: 1.7;
+      color: #222;
+      background: #f7f7f5;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 40px 24px;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      padding: 70px 24px;
+    }
+
+    h1 {
+      font-size: 44px;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin-top: 55px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+
+    h3 {
+      margin-top: 30px;
+    }
+
+    .subtitle {
+      font-size: 20px;
+      color: #ccc;
+    }
+
+    .card {
+      background: white;
+      padding: 24px;
+      margin: 20px 0;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      margin: 20px 0;
+    }
+
+    th, td {
+      padding: 14px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background: #f0f0ee;
+    }
+
+    .metric {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .small {
+      color: #666;
+      font-size: 14px;
+    }
+
+    footer {
+      margin-top: 70px;
+      padding: 40px 0;
+      border-top: 1px solid #ddd;
+      color: #555;
+    }
+
+    a {
+      color: #333;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="container">
+    <p>FLYRANK ML INTERNSHIP · CAPSTONE</p>
+
+    <h1>
+      Content Performance Prioritization Using Search and Engagement Signals
+    </h1>
+
+    <p class="subtitle">
+      A machine-learning decision-support workflow for prioritizing content
+      for human review.
+    </p>
+
+    <p>
+      Author: Fatima Ali
+    </p>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ABSTRACT -->
+
+  <h2>Abstract</h2>
+
+  <div class="card">
+    <p>
+      This study asks whether historical search, traffic, engagement,
+      content-age, and position signals can help rank content items for
+      human review when they show signs associated with decline.
+    </p>
+
+    <p>
+      The analysis uses the pseudonymized FlyRank ML Internship
+      content-refresh dataset and excludes identifiers and
+      outcome-derived fields that could leak the target.
+    </p>
+
+    <p>
+      A Random Forest classifier was evaluated against a transparent
+      baseline using a client-grouped train/test split.
+    </p>
+
+    <p>
+      On the evaluated split, the Random Forest measured Precision@20 of
+      1.00 and Precision@50 of 1.00, compared with 0.35 and 0.44 for
+      the baseline.
+    </p>
+
+    <p>
+      The resulting ranked queue is intended as directional
+      decision-support for human content review, not as an automated
+      SEO or causal system.
+    </p>
+  </div>
+
+
+  <!-- INTRODUCTION -->
+
+  <h2>1. Introduction / Problem Statement</h2>
+
+  <p>
+    Content teams often have more pages to review than analysts can
+    inspect manually. The practical decision is therefore not simply
+    whether a page is "good" or "bad", but which pages deserve attention
+    first.
+  </p>
+
+  <p>
+    This project evaluates whether historical search and engagement
+    signals can support that prioritization.
+  </p>
+
+  <p>
+    The unit of analysis is an individual pseudonymized content item.
+    The output is a ranked review priority score with reason codes and
+    recommended human-review actions.
+  </p>
+
+
+  <!-- DATA -->
+
+  <h2>2. Data</h2>
+
+  <p>
+    The analysis uses the FlyRank ML Internship starter
+    content-refresh dataset containing 30,000 pseudonymized content
+    items and 44 available columns.
+  </p>
+
+  <p>
+    The target is <code>is_declining_label</code>, defined as 1 when
+    <code>trend_direction</code> is "down" and 0 otherwise.
+  </p>
+
+  <p>
+    Identifier fields such as <code>content_id</code> and
+    <code>client_id</code> were excluded from predictive modeling.
+    Outcome-derived fields including <code>trend_direction</code> and
+    <code>trend_pct</code> were also excluded to reduce leakage risk.
+  </p>
+
+  <p>
+    The final model uses 29 numeric features covering search demand,
+    competition, content size, historical impressions and clicks,
+    recent activity, content age, freshness, CTR, position,
+    engagement, scrolling, and AI-traffic signals.
+  </p>
+
+  <p>
+    No client names, domains, private queries, credentials, or other
+    client-identifying information are presented in this paper.
+  </p>
+
+
+  <!-- METHODOLOGY -->
+
+  <h2>3. Methodology</h2>
+
+  <div class="card">
+
+    <h3>Model</h3>
+
+    <p>
+      A Random Forest classifier produces a decline-risk score that is
+      used for prioritization.
+    </p>
+
+    <h3>Target</h3>
+
+    <p>
+      The target is <code>is_declining_label</code>, where 1 represents
+      content whose observed trend direction is "down".
+    </p>
+
+    <h3>Validation</h3>
+
+    <p>
+      Validation uses a client-grouped train/test split so that clients
+      in the test set do not appear in the training set.
+    </p>
+
+    <h3>Baseline</h3>
+
+    <p>
+      The Random Forest is compared with a transparent Week-4
+      hand-written baseline based on impressions and CTR.
+    </p>
+
+    <h3>Leakage checks</h3>
+
+    <p>
+      Identifier fields and label-derived fields were excluded.
+      Missing numeric values were handled using training-set medians.
+    </p>
+
+  </div>
+
+
+  <!-- RESULTS -->
+
+  <h2>4. Results</h2>
+
+  <table>
+    <tr>
+      <th>Method</th>
+      <th>Precision@20</th>
+      <th>Precision@50</th>
+    </tr>
+
+    <tr>
+      <td>Week-4 baseline</td>
+      <td>0.35</td>
+      <td>0.44</td>
+    </tr>
+
+    <tr>
+      <td><strong>Random Forest</strong></td>
+      <td><strong>1.00</strong></td>
+      <td><strong>1.00</strong></td>
+    </tr>
+  </table>
+
+  <div class="card">
+
+    <div class="metric">51.1%</div>
+
+    <p>
+      Approximate positive-class rate in the evaluated test set.
+    </p>
+
+  </div>
+
+  <p>
+    On the evaluated client-grouped test split, the Random Forest ranked
+    the highest-scoring content items above the transparent baseline.
+    These are measured results on the evaluated split and should not be
+    interpreted as guaranteed future performance.
+  </p>
+
+
+  <h3>Most important observed features</h3>
+
+  <ol>
+    <li><code>impressions_prev_30d</code></li>
+    <li><code>impressions_last_30d</code></li>
+    <li><code>impressions_90d</code></li>
+    <li><code>days_with_impressions</code></li>
+    <li><code>content_age_days</code></li>
+    <li><code>avg_position</code></li>
+    <li><code>age_tier_order</code></li>
+    <li><code>clicks_last_30d</code></li>
+    <li><code>sessions_last_30d</code></li>
+    <li><code>word_count</code></li>
+  </ol>
+
+  <p class="small">
+    Feature importance indicates predictive usefulness in this model;
+    it does not establish causation.
+  </p>
+
+
+  <!-- LIMITATIONS -->
+
+  <h2>5. Limitations & Honest Framing</h2>
+
+  <ul>
+    <li>
+      Performance describes the evaluated client-grouped test split and
+      does not guarantee future performance.
+    </li>
+
+    <li>
+      The model is not causal.
+    </li>
+
+    <li>
+      A high model score does not prove that refreshing content will
+      increase traffic, clicks, CTR, or rankings.
+    </li>
+
+    <li>
+      Performance may change when the data distribution, content mix,
+      available fields, or business objective changes.
+    </li>
+
+    <li>
+      The ranked queue is a human-review prioritization tool rather
+      than an automated publishing, deletion, SEO, or refresh system.
+    </li>
+  </ul>
+
+
+  <!-- RECOMMENDATIONS -->
+
+  <h2>6. Ranked Recommendations</h2>
+
+  <div class="card">
+
+    <h3>Priority 1 — Review high-score declining content</h3>
+
+    <p>
+      Items with high model scores and an observed declining trend should
+      receive the earliest human review.
+    </p>
+
+    <p>
+      <strong>Reason code:</strong> REFRESH_DECLINING
+    </p>
+
+    <p>
+      <strong>Action:</strong> Review the content for a possible
+      targeted refresh.
+    </p>
+
+  </div>
+
+
+  <div class="card">
+
+    <h3>Priority 2 — Review high-score items with insufficient evidence</h3>
+
+    <p>
+      A high model score should not automatically trigger an edit.
+      Reviewers should verify the underlying evidence and current
+      content relevance.
+    </p>
+
+    <p>
+      <strong>Reason code:</strong> REVIEW_ONLY
+    </p>
+
+    <p>
+      <strong>Action:</strong> Human review before deciding on any
+      content action.
+    </p>
+
+  </div>
+
+
+  <div class="card">
+
+    <h3>Priority 3 — Keep content changes human-controlled</h3>
+
+    <p>
+      The model should not automatically publish rewrites, delete
+      content, change URLs, modify technical SEO settings, or treat a
+      high score as proof that a refresh will improve performance.
+    </p>
+
+  </div>
+
+
+  <!-- REPRODUCIBILITY -->
+
+  <h2>7. Reproducibility</h2>
+
+  <p>
+    The analysis notebook and supporting weekly work are available in
+    the project repository.
+  </p>
+
+  <p>
+    The capstone notebook is located at
+    <code>work/notebooks/capstone.ipynb</code>.
+  </p>
+
+  <p>
+    The workflow builds on the Week-5 modeling, Week-6 validation
+    audit, and Week-7 action-playbook work in the repository.
+  </p>
+
+
+  <!-- ARTIFACTS -->
+
+  <h2>8. Artifacts</h2>
+
+  <ul>
+    <li>Model-vs-baseline evaluation</li>
+    <li>Feature-importance ranking</li>
+    <li>Client-grouped validation</li>
+    <li>Leakage audit</li>
+    <li>Ranked content-review queue</li>
+    <li>Reason codes and recommended actions</li>
+  </ul>
+
+
+  <!-- ACKNOWLEDGMENTS -->
+
+  <h2>9. Acknowledgments & Data Credit</h2>
+
+  <p>
+    Built on the FlyRank ML Internship dataset.
+  </p>
+
+  <p>
+    <a href="https://flyrank.ai" target="_blank">
+      FlyRank
+    </a>
+  </p>
+
+
+  <footer>
+
+    <p>
+      <strong>Author:</strong> Fatima Ali
+    </p>
+
+    <p>
+      FlyRank ML Internship Capstone · 2026
+    </p>
+
+    <p class="small">
+      This research artifact uses observed and measured language and
+      is intended for directional decision-support.
+    </p>
+
+  </footer>
+
+</main>
+
+</body>
+</html>
